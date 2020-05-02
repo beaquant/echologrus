@@ -18,7 +18,7 @@ func New() EchoLogger {
 func Attach(e *echo.Echo) EchoLogger {
 	el := New()
 	e.Logger = el
-	e.Use(el)
+	e.Use(el.Hook())
 	return el
 }
 
