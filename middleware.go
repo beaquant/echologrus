@@ -4,8 +4,7 @@ import (
 	"io"
 	"strconv"
 	"time"
-
-	"github.com/labstack/echo/v4"
+	echo "github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
 	"github.com/sirupsen/logrus"
 )
