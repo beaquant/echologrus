@@ -9,21 +9,22 @@ import (
 	"time"
 )
 
-// Logrus : implement Logger
-type Logrus struct {
+func New() EchoLogger {
+	return EchoLogger{logrus.New()}
+}
+
+/*
+EchoLogger is logrus wrapper for satisfying echo.Logger interface.
+Set this to echo.Logger for using logrus logger in echo requset logging.
+Original logger implementation : https://pkg.go.dev/github.com/labstack/gommon@v0.3.0/log?tab=doc#Logger
+Interface definition : https://pkg.go.dev/github.com/labstack/echo/v4?tab=doc#Logger
+*/
+type EchoLogger struct {
 	*logrus.Logger
 }
 
-// Logger ...
-var Logger *logrus.Logger
-
-// GetEchoLogger for e.Logger
-func GetEchoLogger() Logrus {
-	return Logrus{Logger}
-}
-
 // Level returns logger level
-func (l Logrus) Level() log.Lvl {
+func (l EchoLogger) Level() log.Lvl {
 	switch l.Logger.Level {
 	case logrus.DebugLevel:
 		return log.DEBUG
@@ -34,123 +35,131 @@ func (l Logrus) Level() log.Lvl {
 	case logrus.InfoLevel:
 		return log.INFO
 	default:
-		l.Panic("Invalid level")
+		return log.OFF //original implemetation panics in this case, but is panicking good choice in log function?
 	}
-
-	return log.OFF
 }
 
-// SetHeader is a stub to satisfy interface
-// It's controlled by Logger
-func (l Logrus) SetHeader(_ string) {}
+/*
+It's empty because actual header function controlled in logrus.
+So, just defined for satisfying interface.
+*/
+func (l EchoLogger) SetHeader(_ string) {}
 
-// SetPrefix It's controlled by Logger
-func (l Logrus) SetPrefix(s string) {}
+/*
+It's empty because actual prefix function controlled in logrus.
+So, just defined for satisfying interface.
+*/
+func (l EchoLogger) SetPrefix(s string) {}
 
-// Prefix It's controlled by Logger
-func (l Logrus) Prefix() string {
+/*
+It's empty because actual prefix function controlled in logrus.
+So, just defined for satisfying interface and return just empty string.
+*/
+func (l EchoLogger) Prefix() string {
 	return ""
 }
 
 // SetLevel set level to logger from given log.Lvl
-func (l Logrus) SetLevel(lvl log.Lvl) {
+func (l EchoLogger) SetLevel(lvl log.Lvl) {
 	switch lvl {
 	case log.DEBUG:
-		Logger.SetLevel(logrus.DebugLevel)
+		l.Logger.SetLevel(logrus.DebugLevel)
 	case log.WARN:
-		Logger.SetLevel(logrus.WarnLevel)
+		l.Logger.SetLevel(logrus.WarnLevel)
 	case log.ERROR:
-		Logger.SetLevel(logrus.ErrorLevel)
+		l.Logger.SetLevel(logrus.ErrorLevel)
 	case log.INFO:
-		Logger.SetLevel(logrus.InfoLevel)
+		l.Logger.SetLevel(logrus.InfoLevel)
 	default:
-		l.Panic("Invalid level")
+		l.Logger.SetLevel(logrus.TraceLevel) //Same reason with Level()
 	}
 }
 
 // Output logger output func
-func (l Logrus) Output() io.Writer {
+func (l EchoLogger) Output() io.Writer {
 	return l.Out
 }
 
 // SetOutput change output, default os.Stdout
-func (l Logrus) SetOutput(w io.Writer) {
-	Logger.SetOutput(w)
+func (l EchoLogger) SetOutput(w io.Writer) {
+	l.Logger.SetOutput(w)
 }
 
 // Printj print json log
-func (l Logrus) Printj(j log.JSON) {
-	Logger.WithFields(logrus.Fields(j)).Print()
+func (l EchoLogger) Printj(j log.JSON) {
+	l.Logger.WithFields(logrus.Fields(j)).Print()
 }
 
 // Debugj debug json log
-func (l Logrus) Debugj(j log.JSON) {
-	Logger.WithFields(logrus.Fields(j)).Debug()
+func (l EchoLogger) Debugj(j log.JSON) {
+	l.Logger.WithFields(logrus.Fields(j)).Debug()
 }
 
 // Infoj info json log
-func (l Logrus) Infoj(j log.JSON) {
-	Logger.WithFields(logrus.Fields(j)).Info()
+func (l EchoLogger) Infoj(j log.JSON) {
+	l.Logger.WithFields(logrus.Fields(j)).Info()
 }
 
 // Warnj warning json log
-func (l Logrus) Warnj(j log.JSON) {
-	Logger.WithFields(logrus.Fields(j)).Warn()
+func (l EchoLogger) Warnj(j log.JSON) {
+	l.Logger.WithFields(logrus.Fields(j)).Warn()
 }
 
 // Errorj error json log
-func (l Logrus) Errorj(j log.JSON) {
-	Logger.WithFields(logrus.Fields(j)).Error()
+func (l EchoLogger) Errorj(j log.JSON) {
+	l.Logger.WithFields(logrus.Fields(j)).Error()
 }
 
 // Fatalj fatal json log
-func (l Logrus) Fatalj(j log.JSON) {
-	Logger.WithFields(logrus.Fields(j)).Fatal()
+func (l EchoLogger) Fatalj(j log.JSON) {
+	l.Logger.WithFields(logrus.Fields(j)).Fatal()
 }
 
 // Panicj panic json log
-func (l Logrus) Panicj(j log.JSON) {
-	Logger.WithFields(logrus.Fields(j)).Panic()
+func (l EchoLogger) Panicj(j log.JSON) {
+	l.Logger.WithFields(logrus.Fields(j)).Panic()
 }
 
 // Print string log
-func (l Logrus) Print(i ...interface{}) {
-	Logger.Print(i...)
+func (l EchoLogger) Print(i ...interface{}) {
+	l.Logger.Print(i...)
 }
 
 // Debug string log
-func (l Logrus) Debug(i ...interface{}) {
-	Logger.Debug(i...)
+func (l EchoLogger) Debug(i ...interface{}) {
+	l.Logger.Debug(i...)
 }
 
 // Info string log
-func (l Logrus) Info(i ...interface{}) {
-	Logger.Info(i...)
+func (l EchoLogger) Info(i ...interface{}) {
+	l.Logger.Info(i...)
 }
 
 // Warn string log
-func (l Logrus) Warn(i ...interface{}) {
-	Logger.Warn(i...)
+func (l EchoLogger) Warn(i ...interface{}) {
+	l.Logger.Warn(i...)
 }
 
 // Error string log
-func (l Logrus) Error(i ...interface{}) {
-	Logger.Error(i...)
+func (l EchoLogger) Error(i ...interface{}) {
+	l.Logger.Error(i...)
 }
 
 // Fatal string log
-func (l Logrus) Fatal(i ...interface{}) {
-	Logger.Fatal(i...)
+func (l EchoLogger) Fatal(i ...interface{}) {
+	l.Logger.Fatal(i...)
 }
 
 // Panic string log
-func (l Logrus) Panic(i ...interface{}) {
-	Logger.Panic(i...)
+func (l EchoLogger) Panic(i ...interface{}) {
+	l.Logger.Panic(i...)
 }
 
-func logrusMiddlewareHandler(c echo.Context, next echo.HandlerFunc) error {
+// handler for real part of printing log
+func (l EchoLogger) handler(c echo.Context, next echo.HandlerFunc) error {
 	req := c.Request()
 	res := c.Response()
+
 	start := time.Now()
 	if err := next(c); err != nil {
 		c.Error(err)
@@ -158,10 +167,8 @@ func logrusMiddlewareHandler(c echo.Context, next echo.HandlerFunc) error {
 	stop := time.Now()
 
 	p := req.URL.Path
-
 	bytesIn := req.Header.Get(echo.HeaderContentLength)
-
-	Logger.WithFields(map[string]interface{}{
+	l.Logger.WithFields(map[string]interface{}{
 		"time_rfc3339":  time.Now().Format(time.RFC3339),
 		"remote_ip":     c.RealIP(),
 		"host":          req.Host,
@@ -180,13 +187,11 @@ func logrusMiddlewareHandler(c echo.Context, next echo.HandlerFunc) error {
 	return nil
 }
 
-func logger(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		return logrusMiddlewareHandler(c, next)
-	}
-}
-
 // Hook is a function to process middleware.
-func Hook() echo.MiddlewareFunc {
-	return logger
+func (l EchoLogger) Hook() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			return l.handler(c, next)
+		}
+	}
 }
