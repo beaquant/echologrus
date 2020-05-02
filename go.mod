@@ -1,4 +1,4 @@
-module github.com/dictor/echo-logrus
+module github.com/dictor/echologrus
 
 go 1.13
 
