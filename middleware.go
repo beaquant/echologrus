@@ -16,7 +16,7 @@ func New() EchoLogger {
 
 //Make and attach it to echo, use for simple code.
 func Attach(e *echo.Echo) EchoLogger {
-	el = New()
+	el := New()
 	e.Logger = el
 	e.Use(el)
 	return el
