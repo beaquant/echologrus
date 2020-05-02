@@ -1,12 +1,12 @@
 package echologrus
 
 import (
-	"io"
-	"strconv"
-	"time"
 	echo "github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
 	"github.com/sirupsen/logrus"
+	"io"
+	"strconv"
+	"time"
 )
 
 // Logrus : implement Logger
@@ -115,37 +115,37 @@ func (l Logrus) Panicj(j log.JSON) {
 
 // Print string log
 func (l Logrus) Print(i ...interface{}) {
-	Logger.Print(i[0].(string))
+	Logger.Print(i...)
 }
 
 // Debug string log
 func (l Logrus) Debug(i ...interface{}) {
-	Logger.Debug(i[0].(string))
+	Logger.Debug(i...)
 }
 
 // Info string log
 func (l Logrus) Info(i ...interface{}) {
-	Logger.Info(i[0].(string))
+	Logger.Info(i...)
 }
 
 // Warn string log
 func (l Logrus) Warn(i ...interface{}) {
-	Logger.Warn(i[0].(string))
+	Logger.Warn(i...)
 }
 
 // Error string log
 func (l Logrus) Error(i ...interface{}) {
-	Logger.Error(i[0].(string))
+	Logger.Error(i...)
 }
 
 // Fatal string log
 func (l Logrus) Fatal(i ...interface{}) {
-	Logger.Fatal(i[0].(string))
+	Logger.Fatal(i...)
 }
 
 // Panic string log
 func (l Logrus) Panic(i ...interface{}) {
-	Logger.Panic(i[0].(string))
+	Logger.Panic(i...)
 }
 
 func logrusMiddlewareHandler(c echo.Context, next echo.HandlerFunc) error {
