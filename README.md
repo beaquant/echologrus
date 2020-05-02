@@ -1,28 +1,38 @@
-### echo-logrus
+## echologrus
 
-Middleware echo-logrus is a [logrus](https://github.com/sirupsen/logrus) logger support for [echo](https://github.com/labstack/echo).
+Middleware echologrus is a [logrus](https://github.com/sirupsen/logrus) logger support for [echo](https://github.com/labstack/echo).
+Only support echo **v4**.
 
-`v3.0` tag supports v3.
-`v4.0` tag supports v4.
-
-#### Install
+### Install
 
 ```sh
-go get -u github.com/plutov/echo-logrus
+go get -u github.com/dictor/echologrus
 ```
 
-#### Usage
-
-import package
-
+### Example
+#### Basic
 ```go
-echologrus "github.com/plutov/echo-logrus"
+import (
+	elogrus "github.com/dictor/echologrus"
+	"github.com/labstack/echo/v4"
+	"github.com/x-cray/logrus-prefixed-formatter"
+	"net/http"
+)
+
+func main() {
+	e := echo.New()
+	elogrus.Attach(e)
+	e.GET("/", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Hello, World!")
+	})
+	e.Logger.Fatal(e.Start(":80"))
+}
 ```
 
-define new logrus
-
+#### Using custom formatter
 ```go
-echologrus.Logger = logrus.New()
-e.Logger = echologrus.GetEchoLogger()
-e.Use(echologrus.Hook())
+    e := echo.New()
+	elogrus.Attach(e).Logger.Formatter = new(prefixed.TextFormatter)
 ```
+
+
