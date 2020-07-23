@@ -1,10 +1,12 @@
 package echologrus
 
 import (
+	"bytes"
 	echo "github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
 	"github.com/sirupsen/logrus"
 	"io"
+	"io/ioutil"
 	"strconv"
 	"time"
 )
@@ -169,6 +171,10 @@ func (l EchoLogger) handler(c echo.Context, next echo.HandlerFunc) error {
 	req := c.Request()
 	res := c.Response()
 
+	bodyReader := req.Body
+	buf, _ := ioutil.ReadAll(bodyReader)
+	req.Body = ioutil.NopCloser(bytes.NewBuffer(buf))
+
 	start := time.Now()
 	if err := next(c); err != nil {
 		c.Error(err)
@@ -191,6 +197,7 @@ func (l EchoLogger) handler(c echo.Context, next echo.HandlerFunc) error {
 		"latency_human": stop.Sub(start).String(),
 		"bytes_in":      bytesIn,
 		"bytes_out":     strconv.FormatInt(res.Size, 10),
+		"body":          string(buf),
 	}).Info("Handled request")
 
 	return nil
